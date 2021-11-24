@@ -55,31 +55,18 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
 
         let result
         let message;
-        if (fcn === "createCar" || fcn === "createPrivateCarImplicitForOrg1"
-            || fcn == "createPrivateCarImplicitForOrg2") {
-            result = await contract.submitTransaction(fcn, args[0], args[1], args[2], args[3], args[4]);
-            message = `Successfully added the car asset with key ${args[0]}`
-
-        } else if (fcn === "CreateAsset") {
+         if (fcn === "registerLand") {
             result = await contract.submitTransaction(fcn, args);
-            message = `Successfully added asset with key`
-        } else if (fcn === "InitLedger") {
-            result = await contract.submitTransaction(fcn);
-            message = `Successfully added asset`
-        } else if (fcn == "createPrivateCar" || fcn =="updatePrivateData") {
-            console.log(`Transient data is : ${transientData}`)
-            let carData = JSON.parse(transientData)
-            console.log(`car data is : ${JSON.stringify(carData)}`)
-            let key = Object.keys(carData)[0]
-            const transientDataBuffer = {}
-            transientDataBuffer[key] = Buffer.from(JSON.stringify(carData.car))
-            result = await contract.createTransaction(fcn)
-                .setTransient(transientDataBuffer)
-                .submit()
-            message = `Successfully submitted transient data`
-        }
+            message = `Successfully added land with key`
+        } else if ( fcn === "TransferLand" || fcn === "UpdateLand") {
+            result = await contract.submitTransaction(fcn,args);
+            message = `Successfully transfered land record.`
+        } else if (fcn === "DeleteAsset" || fcn === "TransferLand" ) {
+            result = await contract.submitTransaction(fcn,args);
+            message = `Successfully deleted land record.`
+        } 
         else {
-            return `Invocation require either createCar or changeCarOwner as function but got ${fcn}`
+            return `Invocation require either registerLand or TransferLand or DeleteAsset  as function but got ${fcn}`
         }
 
         await gateway.disconnect();
