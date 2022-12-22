@@ -122,6 +122,7 @@ artifacts/src/github.com/fabcar/go/vendor
 artifacts/src/github.com/fabcar/go/go.sum
 crypto/fabric-client-kv-org1
 fabcar.tar.gz
+landrecords.tar.gz
 api/wallet
 
 channel-artifacts/mychannel.block
@@ -153,6 +154,7 @@ api/app/data/transactionData.block
 api/app/data/transaction.json
 api/app/data/block.json
 api/app/data/blockData.block
+api/package-lock.json
 Explorer/crypto-config
 artifacts/src/github.com/vf
 artifacts/ca-operations/clients
