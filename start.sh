@@ -3,7 +3,7 @@ cd artifacts/channel
 
 cd ../
 
-docker-compose -f ./artifacts/docker-compose.yaml up -d
+docker-compose -f docker-compose.yaml up -d
 
 cd ../
 
