@@ -199,6 +199,7 @@ app.post('/channels/:channelName/chaincodes/:chaincodeName', async function (req
         logger.debug('chaincodeName : ' + chaincodeName);
         logger.debug('fcn  : ' + fcn);
         logger.debug('args  : ' + args);
+        logger.debug('peers  : ' + req.body.peers);
         if (!chaincodeName) {
             res.json(getErrorMessage('\'chaincodeName\''));
             return;
