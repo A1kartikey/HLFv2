@@ -1,7 +1,7 @@
 {
     "host": "localhost",
-    "port": "4000",
-    "jwt_expiretime": "36000",
+    "port": "5000",
+    "jwt_expiretime": "3600000000",
     "channelName": "mychannel",
     "CC_SRC_PATH": "../artifacts",
     "eventWaitTime": "30000",

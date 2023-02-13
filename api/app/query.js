@@ -39,7 +39,7 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
 
         // Get the network (channel) our contract is deployed to.
         const network = await gateway.getNetwork(channelName);
-
+console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         // Get the contract from the network.
         const contract = network.getContract(chaincodeName);
         let result;
@@ -47,8 +47,16 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         if (fcn == "getLandDetails" ||
             fcn =="queryCarsByOwner" ||
             fcn == 'getHistoryForAsset' ||
-            fcn=='restictedMethod' 
+            fcn == 'getmilk' ||
+            fcn == 'getProduct' ||
+            fcn == 'getProductProcessing' ||
+            fcn=='restictedMethod' ||
+            fcn=='getProductShippingUnit' ||
+            fcn== 'getCartoonList' ||
+            fcn=='LandExists' 
+            
             ) {
+                console.log("111111111111111111")
             result = await contract.evaluateTransaction(fcn, args);
 
         } else if (fcn == "readPrivateCar" || fcn == "queryPrivateDataHash"

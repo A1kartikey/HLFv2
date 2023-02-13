@@ -270,10 +270,10 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
             return;
         }
         console.log('args==========', args);
-        args = args.replace(/'/g, '"');
-        args = JSON.parse(args);
+        //args = args.replace(/'/g, '"');
+        //args = JSON.parse(args);
         logger.debug(args);
-
+console.log("444444444444444")
         let message = await query.query(channelName, chaincodeName, args, fcn, req.username, req.orgname);
 
         const response_payload = {
@@ -339,6 +339,194 @@ app.get('/qscc/channels/:channelName/chaincodes/:chaincodeName', async function 
         // }
 
         res.send(response_payload);
+    } catch (error) {
+        const response_payload = {
+            result: null,
+            error: error.name,
+            errorData: error.message
+        }
+        res.send(response_payload)
+    }
+});
+
+app.get('/totalquantiity', async function (req, res) {
+    try {
+        logger.debug('==================== QUERY BY CHAINCODE ==================');
+
+        var channelName = "mychannel";
+        var chaincodeName = "supplychain";
+        //console.log(`chaincode name is :${chaincodeName}`)
+        let args = req.query.args;
+        let fcn = "getProduct";
+        let peer = req.query.peer;
+
+        logger.debug('channelName : ' + channelName);
+        logger.debug('chaincodeName : ' + chaincodeName);
+        logger.debug('fcn : ' + fcn);
+        logger.debug('args : ' + args);
+
+        if (!chaincodeName) {
+            res.json(getErrorMessage('\'chaincodeName\''));
+            return;
+        }
+        if (!channelName) {
+            res.json(getErrorMessage('\'channelName\''));
+            return;
+        }
+        if (!fcn) {
+            res.json(getErrorMessage('\'fcn\''));
+            return;
+        }
+        if (!args) {
+            res.json(getErrorMessage('\'args\''));
+            return;
+        }
+        console.log('args==========', args);
+        //args = args.replace(/'/g, '"');
+        //args = JSON.parse(args);
+        logger.debug(args);
+console.log("444444444444444")
+        let message = await query.query(channelName, chaincodeName, args, fcn, req.username, req.orgname);
+//console.log(message[0])
+var total_amount = 0;
+ var a = message;
+ console.log("result of a ",a)
+// console.log("asdasdasd",a[i].Record.quantity)
+for(let i = 0; i<a.length; i++){
+    
+    let c = parseFloat(a[i].Record.quantity);
+   // let d = c.round(4)
+    total_amount = total_amount + c
+    console.log("3333",a[i].Record.quantity)
+    
+    //console.log(a[i].amount )
+    console.log(total_amount)
+}
+
+let totalAmountProduct = total_amount.toFixed(2)
+
+       
+ const response_payload = {
+            result: {totalAmountProduct},
+            error: null,
+            errorData: null
+        }
+
+        res.send(response_payload);
+    } catch (error) {
+        const response_payload = {
+            result: null,
+            error: error.name,
+            errorData: error.message
+        }
+        res.send(response_payload)
+    }
+});
+
+
+// Invoke transaction on chaincode on target peers
+app.post('/productProcessing', async function (req, res) {
+    try {
+        logger.debug('==================== INVOKE ON CHAINCODE ==================');
+        //var peers = req.body.peers;
+        var chaincodeName = "supplychain";
+        var channelName = "mychannel";
+        var fcn = "processing";
+        //var args = JSON.stringify(req.body.args);
+        var transient = req.body.transient;
+        console.log(`Transient data is ;${transient}`)
+        logger.debug('channelName  : ' + channelName);
+        logger.debug('chaincodeName : ' + chaincodeName);
+        logger.debug('fcn  : ' + fcn);
+        //logger.debug('args  : ' + args);
+        logger.debug('peers  : ' + req.body.peers);
+        if (!chaincodeName) {
+            res.json(getErrorMessage('\'chaincodeName\''));
+            return;
+        }
+        if (!channelName) {
+            res.json(getErrorMessage('\'channelName\''));
+            return;
+        }
+        if (!fcn) {
+            res.json(getErrorMessage('\'fcn\''));
+            return;
+        }
+let p = req.body.input;
+
+
+let id = Math.floor(1000 + Math.random() * 9000);
+//const ids = "PO"+id
+        let args = JSON.stringify({"keyvalue": id, ...p});
+console.log("args", args)
+
+        let message = await invoke.invokeTransaction(channelName, chaincodeName, fcn, args, req.username, req.orgname, transient);
+        console.log(`message result is : ${message}`)
+let keys = '';
+        const response_payload = {
+            result: message,
+           // keys : id,
+            errorData: null
+        }
+        res.send(response_payload);
+
+    } catch (error) {
+        const response_payload = {
+            result: null,
+            error: error.name,
+            errorData: error.message
+        }
+        res.send(response_payload)
+    }
+});
+
+
+app.post('/shippingUnitCarton', async function (req, res) {
+    try {
+        logger.debug('==================== INVOKE ON CHAINCODE ==================');
+        //var peers = req.body.peers;
+        var chaincodeName = "supplychain";
+        var channelName = "mychannel";
+        var fcn = "shippingUnitCarton";
+        //var args = JSON.stringify(req.body.args);
+        var transient = req.body.transient;
+        console.log(`Transient data is ;${transient}`)
+        logger.debug('channelName  : ' + channelName);
+        logger.debug('chaincodeName : ' + chaincodeName);
+        logger.debug('fcn  : ' + fcn);
+        //logger.debug('args  : ' + args);
+        logger.debug('peers  : ' + req.body.peers);
+        if (!chaincodeName) {
+            res.json(getErrorMessage('\'chaincodeName\''));
+            return;
+        }
+        if (!channelName) {
+            res.json(getErrorMessage('\'channelName\''));
+            return;
+        }
+        if (!fcn) {
+            res.json(getErrorMessage('\'fcn\''));
+            return;
+        }
+let p = req.body.args;
+
+
+let id = Math.floor(1000 + Math.random() * 9000);
+//const ids = "PO"+id
+        let args = JSON.stringify({"keyvalue": id, ...p});
+console.log("args", args)
+
+        let message = await invoke.invokeTransaction(channelName, chaincodeName, fcn, args, req.username, req.orgname, transient);
+        console.log(`message result is : ${message}`)
+let keys = '';
+        const response_payload = {
+            key: "CRT_"+ id,
+            result: message,
+             
+            errorData: null
+        }
+        res.send(response_payload);
+
     } catch (error) {
         const response_payload = {
             result: null,

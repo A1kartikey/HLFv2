@@ -54,7 +54,7 @@ presetup() {
     cd /home/kartikey/BasicNetwork-2.0/
     echo Finished  node dependencies
 }
-}
+
 # presetup
 
 CHANNEL_NAME="mychannel"

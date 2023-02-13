@@ -58,9 +58,9 @@ presetup() {
 
 CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="node"
-VERSION="1"
+VERSION="2"
 CC_SRC_PATH="./chaincode/chaincode-javascript"
-CC_NAME="landrecords"
+CC_NAME="supplychain"
 
 packageChaincode() {
     rm -rf ${CC_NAME}.tar.gz

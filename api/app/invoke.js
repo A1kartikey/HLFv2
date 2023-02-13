@@ -50,20 +50,22 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
 
         // Get the network (channel) our contract is deployed to.
         const network = await gateway.getNetwork(channelName);
-
+        //const ord = await network.getCommitters(["ordererMSP"])
+        //console.log("444444444444",ord)
+//console.log("222222222222",network)
         const contract = network.getContract(chaincodeName);
-
+//console.log("33333333333",contract)
         let result
         let message;
-         if (fcn === "registerLand") {
+         if (fcn === "registerLand" ||fcn === "addproduct" ||fcn === "updateProduct" ||fcn ===  "processingProduct" ||fcn ===  "processing" || fcn === "qrCreate" || fcn === "shippingUnitCarton") {
             result = await contract.submitTransaction(fcn, args);
-            message = `Successfully added land with key`
+            message = `Successfully added product with key`
         } else if ( fcn === "TransferLand" || fcn === "UpdateLand") {
             result = await contract.submitTransaction(fcn,args);
             message = `Successfully transfered land record.`
-        } else if (fcn === "DeleteAsset" || fcn === "TransferLand" ) {
+        } else if (fcn === "DeleteAsset" || fcn === "TransferLand" ||fcn === "deleteProduct" ) {
             result = await contract.submitTransaction(fcn,args);
-            message = `Successfully deleted land record.`
+            message = `Successfully deleted product record.`
         } 
         else {
             return `Invocation require either registerLand or TransferLand or DeleteAsset  as function but got ${fcn}`

@@ -33,3 +33,31 @@ https://api.postman.com/collections/3380735-37cbba41-f744-4535-804c-33c232d6e3f2
 
 
 
+===============================================================
+
+
+step1:
+cd HLFv2/
+
+step2:
+./01.start.sh
+
+step3:
+./02.createChannel.sh 
+
+step4:
+./03.deployChaincode.sh
+
+step5:
+cd api/config/
+
+step6:
+./generate-ccp.sh 
+
+step7: 
+cd ..
+
+step8:
+node app.js
+
+
