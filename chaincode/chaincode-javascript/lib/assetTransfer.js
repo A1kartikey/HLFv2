@@ -26,7 +26,7 @@ async addproduct(ctx,req){
 
          args.doctype = "rawmaterial";
          const txID = ctx.stub.getTxID();
-         args.txID = txID;
+         args.hash = txID;
      
         try {  
             const exists = await this.LandExists(ctx, args.key);
@@ -227,7 +227,7 @@ const txID = ctx.stub.getTxID();
     productDetails: args,
     DocType: "productProcessing",
     productTotalUnits: "600",
-    txID: txID
+    hash: txID
     //bydefault make it empty will update once QR Code is generated
     
 
@@ -341,7 +341,7 @@ DocType: "cartoonCreation",
 totalUnits : totalunits,
 Status: "CARTON_CREATED",
 cartonQRCode: customResponse,
-txID: txID
+hash: txID
 }
 console.log("G: ",g) ;
 var result = await ctx.stub.putState(keyvalue, Buffer.from(stringify(sortKeysRecursive(g))));
@@ -374,14 +374,14 @@ async addDistributorsAndRetailer(ctx,req){
     console.log("checking")
             if (exists) {
                 const txID = ctx.stub.getTxID();
-                args.txID = txID;
+                args.hash = txID;
             
                 var  result =  await ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(args))));
                 console.log("result: ",result);
                 
             }else{
                 const txID = ctx.stub.getTxID();
-                args.txID = txID;
+                args.hash = txID;
             var  result =  await ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(args))));
         console.log("result: ",result);
             }
