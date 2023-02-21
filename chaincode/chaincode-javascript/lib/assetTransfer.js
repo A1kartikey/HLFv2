@@ -10,62 +10,24 @@
 const stringify  = require('json-stringify-deterministic');
 const sortKeysRecursive  = require('sort-keys-recursive');
 const { Contract } = require('fabric-contract-api');
+const MakeQRCode = require ('qrcode');
+  
+
 
 class AssetTransfer extends Contract {
    
-    // registerLand creats a new land to the world state with given details.
-    // async registerLand(ctx, req) {
-    //     try {
-
-    //         var args =  JSON.parse(req);
-    //         const exists = await this.LandExists(ctx, args.surveyNumber);
-    
-    //         if (exists) {
-    //             throw new Error(`The land ${args.surveyNumber} already exists`);
-    //         }
-    
-    //         const land = {
-    //             surveyNumber: args.surveyNumber,
-    //             state: args.state,
-    //             district: args.district,
-    //             village: args.village,
-    //             currentOwner: args.currentOwner,
-    //             marketValue: args.marketValue
-    //         };
-
-
-    //         console.log("check land: ",land);
-    //         try {   
-            
-    //             var  result =  await ctx.stub.putState(args.surveyNumber, Buffer.from(stringify(sortKeysRecursive(land))));
-    //             console.log("result: ",result);
-            
-    //         } catch(error) {
-
-    //             throw new Error(`error in putstate land: ${error} `);
-
-    //         }
-
-    //         var message = {
-    //                 productDetails : land ,
-    //                 successResult : result
-    //         }
-    //         return JSON.stringify(message);
-
-    //     } catch (error){ 
-
-    //         throw new Error(`error in registring land: ${error} `);
-    //     }
-
-    // }
 
 async addproduct(ctx,req){
 
     try {
 
         var args =  JSON.parse(req);
-        console.log("111111111111111",args)
+        console.log("111111111111111",args);
 
+         args.doctype = "rawmaterial";
+         const txID = ctx.stub.getTxID();
+         args.txID = txID;
+     
         try {  
             const exists = await this.LandExists(ctx, args.key);
     console.log("checking")
@@ -96,70 +58,7 @@ async addproduct(ctx,req){
 
 
 }
-
-
-    // getLandDetails returns the land stored in the world state with given id.
-    // async getLandDetails(ctx, args) {
-    //     console.log("args: ",args) ;
-    //     try {        const assetJSON = await ctx.stub.getState(args); // get the land from chaincode state
-    //         if (!assetJSON || assetJSON.length === 0) {
-    //             throw new Error(`The asset does not exist`);
-    //         }
-    //         return assetJSON.toString();
-    //     } catch(error){
-
-    //         throw new Error(`error in get state: ${error}`);
-    //     }
-
-    // }
-
-    // UpdateLand record updates an existing land in the world state with provided parameters.
-    async UpdateLand(ctx, req) {
-
-        var args =  JSON.parse(req);
-        try {            const landinString = await this.getLandDetails(ctx, args.surveyNumber);
-            console.log("landstring: ",landinString)
-        } catch(error) {
-            throw new Error(`error in getting details of existing land record: ${error} `);
-
-        }
-            const landinString = await this.getLandDetails(ctx, args.surveyNumber);
-            console.log("landstring: ",landinString)
-       
-
-        const landinJSON = JSON.parse(landinString);
-        landinJSON.state = args.state;
-        landinJSON.district = args.district ;
-        landinJSON.village = args.village ;
-        landinJSON.marketValue = args.marketValue ;
-        // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
-        return ctx.stub.putState(args.surveyNumber, Buffer.from(stringify(sortKeysRecursive(landinJSON))));
-
-        
-    }
-
-    // Delete land record deletes from the world state.
-    async DeleteAsset(ctx, id) {
-
-        try {
-            const exists = await this.LandExists(ctx, id);
-            if (!exists) {
-                throw new Error(`The asset ${id} does not exist`);
-            }
-            const d =  ctx.stub.deleteState(id);
-    
-            var message = {
-                productDetails : d ,
-                successResult : "scucessfully deleted product"
-        }
-        return JSON.stringify(message);
-
-        }catch(error) {
-
-            throw new Error(`error in get state: ${error}`);
-        }
-    }
-
+   
     // LandExists returns true when asset with given ID exists in world state.
     async LandExists(ctx, key) {
         try{
@@ -285,64 +184,6 @@ async addproduct(ctx,req){
         }
     }
     
-//   async processingProduct (ctx,req){
-
-
-//     try {
-//         var args =  JSON.parse(req);
-//         var total = [];
-//        console.log("args key:",args)
-//         //console.log("1111111",args)
-//  let d = args.key;
-//  //console.log("args",d)
-
-//         for(let e of d){
-//             //console.log("i value: ",e)
-//             let a = await ctx.stub.getState(e); 
-//              let f =  JSON.parse(a.toString())
-//             //console.log("222222222",a.toString())
-// //console.log("bbbbbbbbbbbbb",f)
-//    total.push(f) 
-
-//         }
-
-//         //let keyvalue = Math.floor(1000 + Math.random() * 9000);
-
-        
-//  let j = args.keyvalue;
-//  console.log("jjjjjjjjjjjj",j)
-//             let g = {
-//                 rawMaterialCollection : total,
-//                 Milk_Type: args.Milk_Type,
-//                 Animal_Type: args.Animal_Type,
-//                 Milk_Quantity: args.Milk_Quantity,
-//                 Product_Quantity: args.Product_Quantity,
-//                 Temperature: args.Temperature,
-//                 allmond: args.allmond
-//             }
-//             console.log("ggggggggggg",g)
-            
-
-//         var result = await ctx.stub.putState(j, Buffer.from(stringify(sortKeysRecursive(g))));
-// //console.log("total",total)
-//         // const b = {
-//         //     ...a
-//         // }
-//         //console.log("3333333",b)
-//         var message = {
-//             productDetails : g ,
-//             successResult : result
-//     }
-//     return JSON.stringify(message);
-
-
-//     }catch(error) {
-
-//         throw new Error(`error in get state: ${error}`);
-//     }
-
-//   }
-
   async processing(ctx,req){
     try {
         console.log("reqqq",req)
@@ -378,14 +219,16 @@ console.log("getstate key",c[t])
         }}
         //let idvalue = "POS"+ id;
 console.log("fiestssssssssssss")
-        
+const txID = ctx.stub.getTxID();
  let keyvalue = "PO_" + args.keyvalue
         console.log("idvalue", keyvalue)
  let g = {
     rawMaterialCollection: total,
     productDetails: args,
     DocType: "productProcessing",
-    productTotalUnits: "600"
+    productTotalUnits: "600",
+    txID: txID
+    //bydefault make it empty will update once QR Code is generated
     
 
  }
@@ -435,6 +278,9 @@ console.log("22222222222222222222222",req)
 
 const detailsjson = JSON.parse(details);
 detailsjson.productDetails.status = args.status;
+detailsjson.productDetails.productQRCode = args.productQRCode;
+
+//productQRCode
 
 // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
 const result = ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(detailsjson))));
@@ -453,6 +299,7 @@ return JSON.stringify(message);
  }
 
  async shippingUnitCarton (ctx, req){
+    //console.log("ctxdddddddddddddddddd",ctx)
     console.log("reqqq",req)
     var args =  JSON.parse(req);
     //console.log("1111111111",req);
@@ -472,16 +319,29 @@ return JSON.stringify(message);
              //console.log("fffffffffffffffff",f);
              productDetails.push(ProductJson); 
              console.log("total",productDetails);
+             
+
     }
 let keyvalue = "CRT_" + args.keyvalue
 //let keyvalue = "CRT_100";
-    console.log("idvalue", keyvalue)
+    //console.log("idvalue", keyvalue)
+    console.log("testinggggggggggggggggggg")
+    console.log("sdfffffffffffffffffffffffff",ctx.stub.getTxID())
+// const txid = ctx.getTxID();
+// console.log("txiddddddddddddddd",txid)
+    const response = await MakeQRCode.toDataURL(keyvalue);
+    console.log("response 1 :", response);
+   const customResponse=encodeURI(response);
+   console.log("222222222222",customResponse);
+   const txID = ctx.stub.getTxID();
 let g = {
 productCollection: productDetails,
 cartonDetails: args,
 DocType: "cartoonCreation",
 totalUnits : totalunits,
-Status: "CARTON_CREATED"
+Status: "CARTON_CREATED",
+cartonQRCode: customResponse,
+txID: txID
 }
 console.log("G: ",g) ;
 var result = await ctx.stub.putState(keyvalue, Buffer.from(stringify(sortKeysRecursive(g))));
@@ -501,6 +361,93 @@ return JSON.stringify(message);
     
     return await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
 }
+
+async addDistributorsAndRetailer(ctx,req){
+
+    try {
+
+        var args =  JSON.parse(req);
+        console.log("Args: ",args)
+
+        try {  
+            const exists = await this.LandExists(ctx, args.key);
+    console.log("checking")
+            if (exists) {
+                const txID = ctx.stub.getTxID();
+                args.txID = txID;
+            
+                var  result =  await ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(args))));
+                console.log("result: ",result);
+                
+            }else{
+                const txID = ctx.stub.getTxID();
+                args.txID = txID;
+            var  result =  await ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(args))));
+        console.log("result: ",result);
+            }
+        } catch(error) {
+
+            throw new Error(`error in putstate land: ${error} `);
+
+        }
+
+        var message = {
+                registeredLandDetails : args ,
+                successResult : result
+        }
+        console.log("Hello") ;
+        return JSON.stringify(message);
+
+    } catch (error){ 
+
+        throw new Error(`error in registring land: ${error} `);
+    }
+
+
+}
+
+async getDistributor(ctx) {
+   
+
+    let queryString = {};
+    queryString.selector = {};
+
+    queryString.selector.stakeholder = "Distributor";
+     console.log("selector: ",queryString)
+    let a = await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
+     console.log("a: ",a);
+    
+     return a ;
+}
+
+async getRetailer(ctx) {
+   
+
+    let queryString = {};
+    queryString.selector = {};
+
+    queryString.selector.stakeholder = "Retailer";
+    return await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
+}
+
+async getRawmaterialIdAndfarmer(ctx) {
+   
+
+    let queryString = {};
+    queryString.selector = {};
+
+    queryString.selector.doctype = "rawmaterial";
+    
+   let g = []
+    g = await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString));
+    console.log("Kartikey",g) ;
+   
+
+
+   return g //shim.success(queryResults);
+}
+
+
 }
 
 module.exports = AssetTransfer;

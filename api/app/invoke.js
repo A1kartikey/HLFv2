@@ -54,11 +54,17 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
         //console.log("444444444444",ord)
 //console.log("222222222222",network)
         const contract = network.getContract(chaincodeName);
+        console.log("contrtactcccccccccccccccccccccccccccc",contract)
 //console.log("33333333333",contract)
         let result
         let message;
-         if (fcn === "registerLand" ||fcn === "addproduct" ||fcn === "updateProduct" ||fcn ===  "processingProduct" ||fcn ===  "processing" || fcn === "qrCreate" || fcn === "shippingUnitCarton") {
+         if (fcn === "registerLand" ||fcn === "addproduct" ||fcn === "updateProduct" ||fcn ===  "processingProduct" ||fcn ===  "processing" || fcn === "qrCreate" || fcn === "shippingUnitCarton"
+         || fcn === "addDistributorsAndRetailer"  ) {
             result = await contract.submitTransaction(fcn, args);
+            console.log("result of invoke file ",result);
+            //const a = JSON.parse(result.toString());
+            //console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa",a)
+
             message = `Successfully added product with key`
         } else if ( fcn === "TransferLand" || fcn === "UpdateLand") {
             result = await contract.submitTransaction(fcn,args);

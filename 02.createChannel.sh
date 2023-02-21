@@ -50,7 +50,7 @@ createChannel(){
     
     ./artifacts/bin/peer channel create -o localhost:7050 -c $CHANNEL_NAME \
     --ordererTLSHostnameOverride orderer.example.com \
-    -f ./artifacts/channel/${CHANNEL_NAME}.tx --outputBlock ./channel-artifacts/${CHANNEL_NAME}.block \
+    -f ./artifacts/channel/${CHANNEL_NAME}.tx --outputBlock ./artifacts/channel/${CHANNEL_NAME}.block \
     --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA
 }
 
@@ -64,16 +64,16 @@ removeOldCrypto(){
 
 joinChannel(){
     setGlobalsForPeer0Org1
-    ./artifacts/bin/peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    ./artifacts/bin/peer channel join -b ./artifacts/channel/$CHANNEL_NAME.block
     
     setGlobalsForPeer1Org1
-    ./artifacts/bin/peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    ./artifacts/bin/peer channel join -b ./artifacts/channel/$CHANNEL_NAME.block
     
     setGlobalsForPeer0Org2
-    ./artifacts/bin/peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    ./artifacts/bin/peer channel join -b ./artifacts/channel/$CHANNEL_NAME.block
     
     setGlobalsForPeer1Org2
-    ./artifacts/bin/peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block
+    ./artifacts/bin/peer channel join -b ./artifacts/channel/$CHANNEL_NAME.block
     
 }
 

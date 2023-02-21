@@ -53,7 +53,10 @@ console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@")
             fcn=='restictedMethod' ||
             fcn=='getProductShippingUnit' ||
             fcn== 'getCartoonList' ||
-            fcn=='LandExists' 
+            fcn=='LandExists' ||
+            fcn== 'getRetailer' ||
+            fcn== 'getDistributor' ||
+            fcn=='getRawmaterialIdAndfarmer'
             
             ) {
                 console.log("111111111111111111")
@@ -65,7 +68,7 @@ console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@")
             // return result
 
         }
-        console.log(result)
+        console.log("get Result: ",result)
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
 
         result = JSON.parse(result.toString());

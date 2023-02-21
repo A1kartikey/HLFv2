@@ -42,7 +42,7 @@ const qscc = async (channelName, chaincodeName, args, fcn, username, org_name) =
         const contract = network.getContract(chaincodeName);
         let result;
 
-        if (fcn == 'GetBlockByNumber') {
+        if (fcn == 'GetBlockByTxID') {
             result = await contract.evaluateTransaction(fcn, channelName, args[0]);
 
             // const fs = require('fs')

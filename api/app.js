@@ -23,10 +23,15 @@ const query = require('./app/query')
 
 app.options('*', cors());
 app.use(cors());
-app.use(bodyParser.json());
+
 app.use(bodyParser.urlencoded({
-    extended: false
+    extended: true,
+    parameterLimit: 1000000,
+    limit: "50mb"
 }));
+app.use(bodyParser.json({limit: '50mb'}));
+
+
 // set secret variable
 app.set('secret', 'thisismysecret');
 app.use(expressJWT({
@@ -527,6 +532,80 @@ let keys = '';
         }
         res.send(response_payload);
 
+    } catch (error) {
+        const response_payload = {
+            result: null,
+            error: error.name,
+            errorData: error.message
+        }
+        res.send(response_payload)
+    }
+});
+app.get('/allRawMaterialWithFarmerName', async function (req, res) {
+    try {
+        logger.debug('==================== QUERY BY CHAINCODE ==================');
+
+        var channelName = "mychannel";
+        var chaincodeName = "supplychain";
+        //console.log(`chaincode name is :${chaincodeName}`)
+        let args = req.query.args;
+        let fcn = "getRawmaterialIdAndfarmer";
+        let peer = req.query.peer;
+
+        logger.debug('channelName : ' + channelName);
+        logger.debug('chaincodeName : ' + chaincodeName);
+        logger.debug('fcn : ' + fcn);
+        logger.debug('args : ' + args);
+
+        if (!chaincodeName) {
+            res.json(getErrorMessage('\'chaincodeName\''));
+            return;
+        }
+        if (!channelName) {
+            res.json(getErrorMessage('\'channelName\''));
+            return;
+        }
+        if (!fcn) {
+            res.json(getErrorMessage('\'fcn\''));
+            return;
+        }
+        if (!args) {
+            res.json(getErrorMessage('\'args\''));
+            return;
+        }
+        console.log('args==========', args);
+        //args = args.replace(/'/g, '"');
+        //args = JSON.parse(args);
+        logger.debug(args);
+console.log("444444444444444")
+        let message = await query.query(channelName, chaincodeName, args, fcn, req.username, req.orgname);
+//console.log(message[0])
+//var total_amount = 0;
+ var g = message;
+
+let d = []
+for(let a = 0 ; a < g.length ; a++){
+
+    console.log("ffffffffffffffffffffffffff",g[a])
+
+    let data ={
+        key : g[a].Key,
+        farmer: g[a].Record.farmername,
+        productType: g[a].Record.productType
+    }
+
+    d.push(data)
+
+}
+
+       console.log("dataaaaaaaaaaaaaaaaa",d)
+ const response_payload = {
+            result: d,
+            error: null,
+            errorData: null
+        }
+
+        res.send(response_payload);
     } catch (error) {
         const response_payload = {
             result: null,
