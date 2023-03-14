@@ -58,7 +58,7 @@ presetup() {
 
 CHANNEL_NAME="mychannel"
 CC_RUNTIME_LANGUAGE="node"
-VERSION="2"
+VERSION="1"
 CC_SRC_PATH="./chaincode/chaincode-javascript"
 CC_NAME="supplychain"
 

@@ -70,48 +70,7 @@ async addproduct(ctx,req){
         }
     }
 
-    // TransferAsset updates the owner field of asset with given id in the world state.
-    // async TransferLand(ctx, req) {
-
-    //         var args =  JSON.parse(req);
-    //     try {            const landinString = await this.getLandDetails(ctx, args.surveyNumber);
-    //         console.log("landstring: ",landinString)
-    //     } catch(error) {
-    //         throw new Error(`error in getting details of existing land record: ${error} `);
-
-    //     }
-    //         const landinString = await this.getLandDetails(ctx, args.surveyNumber);
-    //         console.log("landstring: ",landinString)
-       
-
-    //     const landinJSON = JSON.parse(landinString);
-    //     landinJSON.currentOwner = args.newOwner;
-    //     // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
-    //     return ctx.stub.putState(args.surveyNumber, Buffer.from(stringify(sortKeysRecursive(landinJSON))));
-    // }
-
-    // // GetAllland returns all land found in the world state.
-    // async GetAllland(ctx) {
-    //     const allResults = [];
-    //     // range query with empty string for startKey and endKey does an open-ended query of all assets in the chaincode namespace.
-    //     const iterator = await ctx.stub.getStateByRange('', '');
-    //     let result = await iterator.next();
-    //     while (!result.done) {
-    //         const strValue = Buffer.from(result.value.value.toString()).toString('utf8');
-    //         let record;
-    //         try {
-    //             record = JSON.parse(strValue);
-    //         } catch (err) {
-    //             console.log(err);
-    //             record = strValue;
-    //         }
-    //         allResults.push(record);
-    //         result = await iterator.next();
-    //     }
-    //     return JSON.stringify(allResults);
-    // }
-
-
+   
     async getmilk(ctx) {
 		let queryString = {};
 		queryString.selector = {};
@@ -198,9 +157,7 @@ async addproduct(ctx,req){
  let first = args.details;
 
         for ( let a in first ){
-            //console.log("aaaaaaaaaaaaaaaaaaaaaaaaa",args[a]);
-            //   history.push(first[a]);
-            //   console.log("historyssss",history)
+            
             let c = first[a].key;
         console.log("11111111111",c);         
     for (let t in c){
@@ -267,6 +224,15 @@ async getProductShippingUnit(ctx, args) {
     queryString.selector.productDetails = {status: "CREATED"};
     return await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
 }
+
+async getProductShippingUnitInTransist(ctx, args) {
+    console.log("hitting function --------------------------")
+    let queryString = {};
+    queryString.selector = {};
+    queryString.selector.DocType = "productProcessing";
+    queryString.selector.productDetails = {status: "IN_TRANSIST"};
+    return await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
+}
  async qrCreate(ctx, req){
 console.log("22222222222222222222222",req)
     var args =  JSON.parse(req);
@@ -312,15 +278,16 @@ return JSON.stringify(message);
         console.log("44444444444444",_productIds[a].productId)
         console.log("work")
         totalunits = totalunits + _productIds[a].productUnits
+
         let Product = await ctx.stub.getState(_productIds[a].productId); 
     
         let ProductJson =  JSON.parse(Product.toString());
+        ProductJson.productDetails.status = "IN_TRANSIST";
+        await ctx.stub.putState(_productIds[a].productId, Buffer.from(stringify(sortKeysRecursive(ProductJson))));
 
              //console.log("fffffffffffffffff",f);
              productDetails.push(ProductJson); 
              console.log("total",productDetails);
-             
-
     }
 let keyvalue = "CRT_" + args.keyvalue
 //let keyvalue = "CRT_100";
@@ -329,7 +296,8 @@ let keyvalue = "CRT_" + args.keyvalue
     console.log("sdfffffffffffffffffffffffff",ctx.stub.getTxID())
 // const txid = ctx.getTxID();
 // console.log("txiddddddddddddddd",txid)
-    const response = await MakeQRCode.toDataURL(keyvalue);
+// 'htpp://localhost:3000/FetchCartonDetails?cartoonid='+keyvalue
+    const response = await MakeQRCode.toDataURL('http://20.96.181.1:6984/_utils/#database/mychannel_supplychain/'+keyvalue);
     console.log("response 1 :", response);
    const customResponse=encodeURI(response);
    console.log("222222222222",customResponse);
@@ -339,12 +307,14 @@ productCollection: productDetails,
 cartonDetails: args,
 DocType: "cartoonCreation",
 totalUnits : totalunits,
-Status: "CARTON_CREATED",
+Status: args.status,
 cartonQRCode: customResponse,
 hash: txID
 }
 console.log("G: ",g) ;
 var result = await ctx.stub.putState(keyvalue, Buffer.from(stringify(sortKeysRecursive(g))));
+
+
 var message = {
     cartonDetails : g ,
     successResult : result
@@ -446,6 +416,110 @@ async getRawmaterialIdAndfarmer(ctx) {
 
    return g //shim.success(queryResults);
 }
+
+async moveShippingToDistributor(ctx,req) {
+   
+    var args =  JSON.parse(req);
+    console.log("args: ",args);
+    //var args =  JSON.parse(req);
+     let ids = args.carton;
+     for (let i = 0; i< ids.length; i++){
+        console.log(ids[i])
+        let carton = await ctx.stub.getState(ids[i]); 
+    
+        let cartonJson =  JSON.parse(carton.toString());
+        console.log("main",cartonJson)
+        
+        let product = cartonJson.productCollection;
+        for (let a in product){
+            product[a].shipingToDistributorDetails= args;
+        //     product[a].distributor_location= args.distributor_location;
+        // product[a].vehicle_type= args.vehicle_type;
+        // product[a].distance= args.distance;
+        }
+        
+        cartonJson.shipingToDistributorDetails= args
+        // cartonJson.distributor_location= args.distributor_location;
+        // cartonJson.vehicle_type= args.vehicle_type;
+        // cartonJson.distance= args.distance;
+        let int =  parseFloat(args.calculateEmmision) 
+       
+        cartonJson.TotalCarbon = int 
+        //console.log("final",cartonJson)
+        var result = await ctx.stub.putState(ids[i], Buffer.from(stringify(sortKeysRecursive(cartonJson))));
+     }
+    //  const txID = ctx.stub.getTxID();
+    //  args.hash = txID;
+     let  g = {
+        result: "success"
+     }
+   return g //shim.success(queryResults);
+}
+
+async moveDistributorToRetailor(ctx,req) {
+   
+    var args =  JSON.parse(req);
+    console.log("args: ",args);
+    //var args =  JSON.parse(req);
+     let ids = args.carton;
+     for (let i = 0; i< ids.length; i++){
+        console.log(ids[i])
+        let carton = await ctx.stub.getState(ids[i]); 
+    
+        let cartonJson =  JSON.parse(carton.toString());
+        console.log("main",cartonJson)
+        
+        let product = cartonJson.productCollection;
+        for (let a in product){
+            product[a].distributorToRetailorDetails = args;
+        //     product[a].distributor_location= args.distributor_location;
+        // product[a].vehicle_type= args.vehicle_type;
+        // product[a].distance= args.distance;
+        }
+        
+        cartonJson.distributorToRetailorDetails = args
+        // cartonJson.distributor_location= args.distributor_location;
+        // cartonJson.vehicle_type= args.vehicle_type;
+        // cartonJson.distance= args.distance;
+
+
+        let int =  parseFloat(args.calculateEmmision) 
+        console.log("carbon from dist: ",int )
+        cartonJson.TotalCarbon += int 
+        //console.log("final",cartonJson)
+        var result = await ctx.stub.putState(ids[i], Buffer.from(stringify(sortKeysRecursive(cartonJson))));
+     }
+    //  const txID = ctx.stub.getTxID();
+    //  args.hash = txID;
+     let  g = {
+        result: "success"
+     }
+   return g //shim.success(queryResults);
+}
+
+async getCartoonDetails(ctx,req) {
+   console.log("req: ",req);
+    
+   
+    //var args =  JSON.parse(req);
+     
+     
+        let carton = await ctx.stub.getState(req); 
+    
+        let cartonJson =  JSON.parse(carton.toString());
+        console.log("main: ",cartonJson)
+        
+        
+        
+        
+    //  const txID = ctx.stub.getTxID();
+    //  args.hash = txID;
+     let  g = {
+        result: cartonJson
+     }
+   return g //shim.success(queryResults);
+}
+
 
 
 }
