@@ -25,19 +25,19 @@ async addproduct(ctx,req){
         console.log("111111111111111",args);
 
          args.doctype = "rawmaterial";
-         const txID = ctx.stub.getTxID();
+         const txID =  await ctx.stub.getTxID();
          args.hash = txID;
      
         try {  
             const exists = await this.LandExists(ctx, args.key);
-    console.log("checking")
+    //console.log("checking")
             if (exists) {
                 var  result =  await ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(args))));
-                console.log("result: ",result);
+                //console.log("result: ",result);
                 
             }else{
             var  result =  await ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(args))));
-        console.log("result: ",result);
+        //console.log("result: ",result);
             }
         } catch(error) {
 
@@ -78,7 +78,7 @@ async addproduct(ctx,req){
 		return await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
 	}
     async getProduct(ctx, args) {
-		console.log("hitting function --------------------------")
+		//console.log("hitting function --------------------------")
         let queryString = {};
 		queryString.selector = {};
 		queryString.selector.productType = args;
@@ -100,14 +100,14 @@ async addproduct(ctx,req){
 		while (!res.done) {
 			if (res.value && res.value.value.toString()) {
 				let jsonRes = {};
-				console.log(res.value.value.toString('utf8'));
+				//console.log(res.value.value.toString('utf8'));
 				if (isHistory && isHistory === true) {
 					jsonRes.TxId = res.value.txId;
 					jsonRes.Timestamp = res.value.timestamp;
 					try {
 						jsonRes.Value = JSON.parse(res.value.value.toString('utf8'));
 					} catch (err) {
-						console.log(err);
+						//console.log(err);
 						jsonRes.Value = res.value.value.toString('utf8');
 					}
 				} else {
@@ -115,7 +115,7 @@ async addproduct(ctx,req){
 					try {
 						jsonRes.Record = JSON.parse(res.value.value.toString('utf8'));
 					} catch (err) {
-						console.log(err);
+						//console.log(err);
 						jsonRes.Record = res.value.value.toString('utf8');
 					}
 				}
@@ -148,7 +148,7 @@ async addproduct(ctx,req){
         console.log("reqqq",req)
         var args =  JSON.parse(req);
         //var total = [];
-       console.log("args key:",args)
+       //console.log("args key:",args)
         //console.log("1111111",args)
  var total = [];
  //var history = [];
@@ -159,26 +159,26 @@ async addproduct(ctx,req){
         for ( let a in first ){
             
             let c = first[a].key;
-        console.log("11111111111",c);         
+        //console.log("11111111111",c);         
     for (let t in c){
     //console.log("ccccccccccccc",c[i]);
 
      //id =  id + c[i];
    
-console.log("getstate key",c[t])
+//console.log("getstate key",c[t])
     let firstvalue = await ctx.stub.getState(c[t]); 
              let f =  JSON.parse(firstvalue.toString());
              //console.log("fffffffffffffffff",f);
              total.push(f); 
-             console.log("total",total);
+            // console.log("total",total);
 
 
         }}
         //let idvalue = "POS"+ id;
-console.log("fiestssssssssssss")
-const txID = ctx.stub.getTxID();
+//console.log("fiestssssssssssss")
+const txID = await ctx.stub.getTxID();
  let keyvalue = "PO_" + args.keyvalue
-        console.log("idvalue", keyvalue)
+        //console.log("idvalue", keyvalue)
  let g = {
     rawMaterialCollection: total,
     productDetails: args,
@@ -207,7 +207,7 @@ const txID = ctx.stub.getTxID();
 
 
   async getProductProcessing(ctx, args) {
-    console.log("hitting function --------------------------")
+    //console.log("hitting function --------------------------")
     let queryString = {};
     queryString.selector = {};
     queryString.selector.DocType = "productProcessing";
@@ -217,7 +217,7 @@ const txID = ctx.stub.getTxID();
 
 
 async getProductShippingUnit(ctx, args) {
-    console.log("hitting function --------------------------")
+   // console.log("hitting function --------------------------")
     let queryString = {};
     queryString.selector = {};
     queryString.selector.DocType = "productProcessing";
@@ -226,7 +226,7 @@ async getProductShippingUnit(ctx, args) {
 }
 
 async getProductShippingUnitInTransist(ctx, args) {
-    console.log("hitting function --------------------------")
+    //console.log("hitting function --------------------------")
     let queryString = {};
     queryString.selector = {};
     queryString.selector.DocType = "productProcessing";
@@ -234,24 +234,24 @@ async getProductShippingUnitInTransist(ctx, args) {
     return await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
 }
  async qrCreate(ctx, req){
-console.log("22222222222222222222222",req)
+//console.log("22222222222222222222222",req)
     var args =  JSON.parse(req);
     try {            
         const details = await ctx.stub.getState(args.key)
-        console.log("QR Code prevobject: ",details)
+        //console.log("QR Code prevobject: ",details)
        // let f =  JSON.parse(a.toString())
 //console.log("3333333333333",f)
 
 const detailsjson = JSON.parse(details);
 detailsjson.productDetails.status = args.status;
 detailsjson.productDetails.productQRCode = args.productQRCode;
-console.log("QR Code PostUpdate object:",detailsjson)
+//console.log("QR Code PostUpdate object:",detailsjson)
 //productQRCode
 
 // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
-const result = ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(detailsjson))));
+const result = await ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(detailsjson))));
 
-console.log("result",result,detailsjson)
+//console.log("result",result,detailsjson)
 var message = {
     productDetails : detailsjson ,
     successResult : result
@@ -266,17 +266,17 @@ return JSON.stringify(message);
 
  async shippingUnitCarton (ctx, req){
     //console.log("ctxdddddddddddddddddd",ctx)
-    console.log("reqqq",req)
+    //console.log("reqqq",req)
     var args =  JSON.parse(req);
     //console.log("1111111111",req);
-    console.log("2222222222",args)
+    //console.log("2222222222",args)
     var _productIds= args.details;
  var productDetails = [];
  var totalunits = 0
     for(let a in _productIds){
-        console.log("3333333333333333",_productIds[a].productId);
-        console.log("44444444444444",_productIds[a].productId)
-        console.log("work")
+       // console.log("3333333333333333",_productIds[a].productId);
+        //console.log("44444444444444",_productIds[a].productId)
+        //console.log("work")
         totalunits = totalunits + _productIds[a].productUnits
 
         let Product = await ctx.stub.getState(_productIds[a].productId); 
@@ -287,22 +287,22 @@ return JSON.stringify(message);
 
              //console.log("fffffffffffffffff",f);
              productDetails.push(ProductJson); 
-             console.log("total",productDetails);
+             //console.log("total",productDetails);
     }
 let keyvalue = "CRT_" + args.keyvalue
 //let keyvalue = "CRT_100";
     //console.log("idvalue", keyvalue)
-    console.log("testinggggggggggggggggggg")
-    console.log("sdfffffffffffffffffffffffff",ctx.stub.getTxID())
+    //console.log("testinggggggggggggggggggg")
+   // console.log("sdfffffffffffffffffffffffff",ctx.stub.getTxID())
 // const txid = ctx.getTxID();
 // console.log("txiddddddddddddddd",txid)
 // 'htpp://localhost:3000/FetchCartonDetails?cartoonid='+keyvalue
 const deployedPage='http://20.96.181.1:3000/fetchcartonDetails/'+keyvalue;
-console.log("deployed page for QR Code :")
+//console.log("deployed page for QR Code :")
     const response = await MakeQRCode.toDataURL(deployedPage);
-    console.log("response 1 :", response);
+   // console.log("response 1 :", response);
    const customResponse=encodeURI(response);
-   console.log("222222222222",customResponse);
+   //console.log("222222222222",customResponse);
    const txID = ctx.stub.getTxID();
 let g = {
 productCollection: productDetails,
@@ -313,7 +313,7 @@ Status: args.status,
 cartonQRCode: customResponse,
 hash: txID
 }
-console.log("G: ",g) ;
+//console.log("G: ",g) ;
 var result = await ctx.stub.putState(keyvalue, Buffer.from(stringify(sortKeysRecursive(g))));
 
 
@@ -326,7 +326,7 @@ return JSON.stringify(message);
  }
 
  async getCartoonList(ctx, args) {
-    console.log("hitting function --------------------------")
+    //console.log("hitting function --------------------------")
     let queryString = {};
     queryString.selector = {};
     queryString.selector.DocType = "cartoonCreation";
@@ -339,23 +339,23 @@ async addDistributorsAndRetailer(ctx,req){
     try {
 
         var args =  JSON.parse(req);
-        console.log("Args: ",args)
+        //console.log("Args: ",args)
 
         try {  
             const exists = await this.LandExists(ctx, args.key);
-    console.log("checking")
+    //console.log("checking")
             if (exists) {
                 const txID = ctx.stub.getTxID();
                 args.hash = txID;
             
                 var  result =  await ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(args))));
-                console.log("result: ",result);
+                //console.log("result: ",result);
                 
             }else{
                 const txID = ctx.stub.getTxID();
                 args.hash = txID;
             var  result =  await ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(args))));
-        console.log("result: ",result);
+       // console.log("result: ",result);
             }
         } catch(error) {
 
@@ -367,7 +367,7 @@ async addDistributorsAndRetailer(ctx,req){
                 registeredLandDetails : args ,
                 successResult : result
         }
-        console.log("Hello") ;
+        //console.log("Hello") ;
         return JSON.stringify(message);
 
     } catch (error){ 
@@ -385,9 +385,9 @@ async getDistributor(ctx) {
     queryString.selector = {};
 
     queryString.selector.stakeholder = "Distributor";
-     console.log("selector: ",queryString)
+     //console.log("selector: ",queryString)
     let a = await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
-     console.log("a: ",a);
+     //console.log("a: ",a);
     
      return a ;
 }
@@ -412,7 +412,7 @@ async getRawmaterialIdAndfarmer(ctx) {
     
    let g = []
     g = await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString));
-    console.log("Kartikey",g) ;
+   // console.log("Kartikey",g) ;
    
 
 
@@ -422,15 +422,15 @@ async getRawmaterialIdAndfarmer(ctx) {
 async moveShippingToDistributor(ctx,req) {
    
     var args =  JSON.parse(req);
-    console.log("args: ",args);
+    //console.log("args: ",args);
     //var args =  JSON.parse(req);
      let ids = args.carton;
      for (let i = 0; i< ids.length; i++){
-        console.log(ids[i])
+        //console.log(ids[i])
         let carton = await ctx.stub.getState(ids[i]); 
     
         let cartonJson =  JSON.parse(carton.toString());
-        console.log("main",cartonJson)
+        //console.log("main",cartonJson)
         
         let product = cartonJson.productCollection;
         for (let a in product){
@@ -461,15 +461,15 @@ async moveShippingToDistributor(ctx,req) {
 async moveDistributorToRetailor(ctx,req) {
    
     var args =  JSON.parse(req);
-    console.log("args: ",args);
+    //console.log("args: ",args);
     //var args =  JSON.parse(req);
      let ids = args.carton;
      for (let i = 0; i< ids.length; i++){
-        console.log(ids[i])
+       // console.log(ids[i])
         let carton = await ctx.stub.getState(ids[i]); 
     
         let cartonJson =  JSON.parse(carton.toString());
-        console.log("main",cartonJson)
+       // console.log("main",cartonJson)
         
         let product = cartonJson.productCollection;
         for (let a in product){
@@ -486,7 +486,7 @@ async moveDistributorToRetailor(ctx,req) {
 
 
         let int =  parseFloat(args.calculateEmmision) 
-        console.log("carbon from dist: ",int )
+        //console.log("carbon from dist: ",int )
         cartonJson.TotalCarbon += int 
         //console.log("final",cartonJson)
         var result = await ctx.stub.putState(ids[i], Buffer.from(stringify(sortKeysRecursive(cartonJson))));
@@ -500,7 +500,7 @@ async moveDistributorToRetailor(ctx,req) {
 }
 
 async getCartoonDetails(ctx,req) {
-   console.log("req: ",req);
+   //console.log("req: ",req);
     
    
     //var args =  JSON.parse(req);
@@ -509,7 +509,7 @@ async getCartoonDetails(ctx,req) {
         let carton = await ctx.stub.getState(req); 
     
         let cartonJson =  JSON.parse(carton.toString());
-        console.log("main: ",cartonJson)
+       // console.log("main: ",cartonJson)
         
         
         
