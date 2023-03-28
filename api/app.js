@@ -57,7 +57,7 @@ app.use((req, res, next) => {
   var token = req.token;
   jwt.verify(token, app.get("secret"), (err, decoded) => {
     if (err) {
-      //console.log(`Error ================:${err}`);
+
       res.send({
         success: false,
         message:
@@ -172,7 +172,7 @@ app.post("/register", async function (req, res) {
     app.get("secret")
   );
 
-  //console.log(token);
+
 
   let response = await helper.registerAndGerSecret(username, orgName);
 
@@ -251,7 +251,7 @@ app.post(
       var fcn = req.body.fcn;
       var args = JSON.stringify(req.body.args);
       var transient = req.body.transient;
-      //console.log(`Transient data is ;${transient}`);
+
       logger.debug("channelName  : " + channelName);
       logger.debug("chaincodeName : " + chaincodeName);
       logger.debug("fcn  : " + fcn);
@@ -283,7 +283,7 @@ app.post(
         req.orgname,
         transient
       );
-      //console.log(`message result is : ${message}`);
+
 
       const response_payload = {
         result: message,
@@ -312,7 +312,7 @@ app.get(
 
       var channelName = req.params.channelName;
       var chaincodeName = req.params.chaincodeName;
-      //console.log(`chaincode name is :${chaincodeName}`);
+
       let args = req.query.args;
       let fcn = req.query.fcn;
       let peer = req.query.peer;
@@ -406,7 +406,7 @@ app.get(
         res.json(getErrorMessage("'args'"));
         return;
       }
-      console.log("args==========", args);
+      //console.log("args==========", args);
       args = args.replace(/'/g, '"');
       args = JSON.parse(args);
       logger.debug(args);
@@ -470,7 +470,7 @@ app.get("/totalquantiity", async function (req, res) {
       res.json(getErrorMessage("'args'"));
       return;
     }
-    console.log("args==========", args);
+    //console.log("args==========", args);
     //args = args.replace(/'/g, '"');
     //args = JSON.parse(args);
     logger.debug(args);
@@ -527,7 +527,7 @@ app.post("/productProcessing", async function (req, res) {
     var fcn = "processing";
     //var args = JSON.stringify(req.body.args);
     var transient = req.body.transient;
-    console.log(`Transient data is ;${transient}`);
+    // console.log(`Transient data is ;${transient}`);
     logger.debug("channelName  : " + channelName);
     logger.debug("chaincodeName : " + chaincodeName);
     logger.debug("fcn  : " + fcn);
@@ -691,7 +691,7 @@ app.get("/allRawMaterialWithFarmerName", async function (req, res) {
 
     let d = [];
     for (let a = 0; a < g.length; a++) {
-     // console.log("ffffffffffffffffffffffffff", g[a]);
+      // console.log("ffffffffffffffffffffffffff", g[a]);
 
       let data = {
         key: g[a].Key,
@@ -949,6 +949,13 @@ app.get("/getfarmToFork", async function (req, res) {
         "final Obj4: ",
         message.result.productCollection[0].productDetails
       );
+    }
+
+    // if ( message.result.) FOR IMAGE 
+    if (message.result.productCollection[0].productDetails.productImage != undefined) {
+      finalObj.productImg = message.result.productCollection[0].productDetails.productImage;
+    } else {
+      console.log("final Obj5: ", finalObj);
     }
     console.log(
       "Final Obj: ",

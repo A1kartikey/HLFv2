@@ -238,20 +238,20 @@ console.log("22222222222222222222222",req)
     var args =  JSON.parse(req);
     try {            
         const details = await ctx.stub.getState(args.key)
-        console.log("!1111111111111111: ",details)
+        console.log("QR Code prevobject: ",details)
        // let f =  JSON.parse(a.toString())
 //console.log("3333333333333",f)
 
 const detailsjson = JSON.parse(details);
 detailsjson.productDetails.status = args.status;
 detailsjson.productDetails.productQRCode = args.productQRCode;
-
+console.log("QR Code PostUpdate object:",detailsjson)
 //productQRCode
 
 // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
 const result = ctx.stub.putState(args.key, Buffer.from(stringify(sortKeysRecursive(detailsjson))));
 
-
+console.log("result",result,detailsjson)
 var message = {
     productDetails : detailsjson ,
     successResult : result
@@ -297,7 +297,9 @@ let keyvalue = "CRT_" + args.keyvalue
 // const txid = ctx.getTxID();
 // console.log("txiddddddddddddddd",txid)
 // 'htpp://localhost:3000/FetchCartonDetails?cartoonid='+keyvalue
-    const response = await MakeQRCode.toDataURL('http://20.96.181.1:6984/_utils/#database/mychannel_supplychain/'+keyvalue);
+const deployedPage='http://20.96.181.1:3000/fetchcartonDetails/'+keyvalue;
+console.log("deployed page for QR Code :")
+    const response = await MakeQRCode.toDataURL(deployedPage);
     console.log("response 1 :", response);
    const customResponse=encodeURI(response);
    console.log("222222222222",customResponse);
